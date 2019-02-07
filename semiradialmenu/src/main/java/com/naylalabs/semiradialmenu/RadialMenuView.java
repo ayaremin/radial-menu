@@ -10,11 +10,12 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 
+import io.codetail.animation.SupportAnimator;
+import io.codetail.animation.ViewAnimationUtils;
 import io.codetail.widget.RevealFrameLayout;
 
 public class RadialMenuView extends RevealFrameLayout {
@@ -41,29 +42,29 @@ public class RadialMenuView extends RevealFrameLayout {
         super(context, attrs);
     }
 
-    public RadialMenuView setListener (RadialMenuListener listener) {
+    public RadialMenuView setListener(RadialMenuListener listener) {
         this.listener = listener;
         return this;
     }
 
-    public RadialMenuView setInnerCircle (boolean innerCircle, int innerCircleColor) {
+    public RadialMenuView setInnerCircle(boolean innerCircle, int innerCircleColor) {
         this.innerCircle = innerCircle;
         this.innerCircleColor = innerCircleColor;
         return this;
     }
 
-    public RadialMenuView setMenuItems (ArrayList<MenuItemView> menuItemViews) {
+    public RadialMenuView setMenuItems(ArrayList<MenuItemView> menuItemViews) {
         this.menuItemViews = menuItemViews;
         return this;
     }
 
-    public RadialMenuView setOffset (int offset) {
+    public RadialMenuView setOffset(int offset) {
         this.offset = Utils.getInstance(getContext()).dpTopixel(offset);
         Utils.getInstance(getContext()).setOffset(this.offset);
         return this;
     }
 
-    public RadialMenuView setCenterView (View v) {
+    public RadialMenuView setCenterView(View v) {
         utils = Utils.getInstance(getContext());
         Utils.getInstance(getContext()).setCenterView(v);
         return this;
@@ -71,10 +72,10 @@ public class RadialMenuView extends RevealFrameLayout {
 
     public void build() {
         utils = Utils.getInstance(getContext());
-        if (menuItemViews == null ) {
+        if (menuItemViews == null) {
             throw new IllegalArgumentException("You should have at least 2 menu item");
         }
-        if (menuItemViews.isEmpty() || menuItemViews.size() < 1 ) {
+        if (menuItemViews.isEmpty() || menuItemViews.size() < 1) {
             throw new IllegalArgumentException("You should have at least 2 menu item");
         }
         if (menuItemViews.size() > 5) {
@@ -84,16 +85,16 @@ public class RadialMenuView extends RevealFrameLayout {
     }
 
     private void init() {
-        View v =  inflate(getContext(), R.layout.radial_menu_layout, this);
+        View v = inflate(getContext(), R.layout.radial_menu_layout, this);
         rootView = v.findViewById(R.id.root_view);
         final int sweepAngle = 180 / menuItemViews.size();
         int index = 1;
         for (MenuItemView view : menuItemViews) {
             if (index == 1) {
-                v1 = new SliceView(getContext(), view.getColor(), (-180 + (index * sweepAngle)) , -1 * sweepAngle);
+                v1 = new SliceView(getContext(), view.getColor(), (-180 + (index * sweepAngle)), -1 * sweepAngle);
                 rootView.addView(v1);
             } else {
-                rootView.addView(new SliceView(getContext(), view.getColor(), (-180 + (index * sweepAngle)) , -1 * sweepAngle));
+                rootView.addView(new SliceView(getContext(), view.getColor(), (-180 + (index * sweepAngle)), -1 * sweepAngle));
             }
             index++;
         }
@@ -111,7 +112,7 @@ public class RadialMenuView extends RevealFrameLayout {
             public void run() {
                 configureItemViews();
             }
-        },300);
+        }, 300);
 
         minDistance = (utils.getScreenWidth() - utils.dpTopixel(50)) / 4;
         maxDistance = (utils.getScreenWidth() - utils.dpTopixel(50)) / 2;
@@ -121,9 +122,6 @@ public class RadialMenuView extends RevealFrameLayout {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     float angle = getAngle(motionEvent.getX(), motionEvent.getY(), v1);
-                    int oX = (int) motionEvent.getX();
-                    int oY = (int) motionEvent.getY();
-
                     float distance = (float) calculateDistanceBetweenCoordinates(motionEvent.getX(), motionEvent.getY(), v1.center_x, v1.center_y);
                     if (distance < minDistance || distance > maxDistance) {
                         isOpen = false;
@@ -131,8 +129,9 @@ public class RadialMenuView extends RevealFrameLayout {
                         return false;
                     }
 
-                    loop:for (int i = 0; i< menuItemViews.size(); i++) {
-                        if (angle <= (sweepAngle * (i+1))) {
+                    loop:
+                    for (int i = 0; i < menuItemViews.size(); i++) {
+                        if (angle <= (sweepAngle * (i + 1))) {
                             if (listener != null) {
                                 listener.onItemClicked(i);
                             }
@@ -166,56 +165,62 @@ public class RadialMenuView extends RevealFrameLayout {
     }
 
     protected void enterReveal() {
-        final View myView = this;
+        final View myView = rootView;
 
         int cWidth = utils.getScreenWidth() - utils.dpTopixel(50);
         int cHeight = cWidth / 2;
         int radius = cHeight;
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            Animator anim;
-            if (utils.getCenterView() == null) {
-                anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, utils.getScreenHeight() - utils.getActionBarSize(), 0, radius);
-            } else{
-                anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, (int)utils.getCenterView().getY() + offset , 0, radius);
-            }
-            anim.setDuration(300);
-            myView.setVisibility(View.VISIBLE);
-            anim.start();
+        SupportAnimator anim;
+        if (utils.getCenterView() == null) {
+            anim = ViewAnimationUtils.createCircularReveal(rootView, utils.getScreenWidth() / 2, utils.getScreenHeight() - utils.getActionBarSize(), 0, radius);
         } else {
-            myView.setVisibility(View.VISIBLE);
+            anim = ViewAnimationUtils.createCircularReveal(rootView, utils.getScreenWidth() / 2, (int) utils.getCenterView().getY() + offset, 0, radius);
         }
+        anim.setDuration(300);
+        setVisibility(View.VISIBLE);
+        anim.start();
     }
 
     protected void exitReveal() {
         try {
             isOpen = false;
-            final View myView = this;
+            final View myView = rootView;
             int cWidth = utils.getScreenWidth() - utils.dpTopixel(50);
             int cHeight = cWidth / 2;
             int radius = cHeight;
 
-            Animator anim =
+            SupportAnimator anim =
                     null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                if (utils.getCenterView() == null) {
-                    anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, utils.getScreenHeight() - utils.getActionBarSize(), radius, 0);
-                } else{
-                    anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, (int)utils.getCenterView().getY() + offset, radius, 0);
-                }
-                anim.setDuration(200);
-
-                anim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        myView.setVisibility(View.INVISIBLE);
-                    }
-                });
-                anim.start();
+            if (utils.getCenterView() == null) {
+                anim = ViewAnimationUtils.createCircularReveal(rootView, utils.getScreenWidth() / 2, utils.getScreenHeight() - utils.getActionBarSize(), radius, 0);
             } else {
-                myView.setVisibility(INVISIBLE);
+                anim = ViewAnimationUtils.createCircularReveal(rootView, utils.getScreenWidth() / 2, (int) utils.getCenterView().getY() + offset, radius, 0);
             }
+            anim.setDuration(200);
+
+            anim.addListener(new SupportAnimator.AnimatorListener() {
+                @Override
+                public void onAnimationStart() {
+
+                }
+
+                @Override
+                public void onAnimationEnd() {
+                    setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onAnimationCancel() {
+
+                }
+
+                @Override
+                public void onAnimationRepeat() {
+
+                }
+            });
+            anim.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -234,17 +239,17 @@ public class RadialMenuView extends RevealFrameLayout {
             menuItemView.setAllowTitle(allowTitle);
             final int sweepAngle = 180 / menuItemViews.size();
             float radius = diameter / 2;
-            float angle = ((sweepAngle/2)  + (sweepAngle * i));
+            float angle = ((sweepAngle / 2) + (sweepAngle * i));
             if (angle > 90)
                 angle = angle * -1;
 
             float oX, oY;
-            double cos = Math.cos(Math.toRadians( angle ));
-            double sin =  Math.sin(Math.toRadians( angle ));
-            double y = sin  * 3 * radius / 4;
+            double cos = Math.cos(Math.toRadians(angle));
+            double sin = Math.sin(Math.toRadians(angle));
+            double y = sin * 3 * radius / 4;
             double x = cos * 3 * radius / 4;
 
-            if (x<0)
+            if (x < 0)
                 x = x * -1;
             if (y < 0)
                 y = y * -1;
@@ -252,20 +257,20 @@ public class RadialMenuView extends RevealFrameLayout {
             int center = utils.getScreenWidth() / 2;
             int centery = (int) utils.getCenterView().getY();
             if (utils.getCenterView() == null) {
-                if ( ((sweepAngle/2)  + (sweepAngle * i)) > 90) {
+                if (((sweepAngle / 2) + (sweepAngle * i)) > 90) {
                     oX = (center + (float) x - utils.dpTopixel(40));
-                    oY = (utils.getScreenHeight()) - (float) y - utils.dpTopixel(40) - utils.getActionBarSize() ;
+                    oY = (utils.getScreenHeight()) - (float) y - utils.dpTopixel(40) - utils.getActionBarSize();
                 } else {
                     oX = (center - (float) x - utils.dpTopixel(40));
-                    oY = (utils.getScreenHeight()) - (float) y - utils.dpTopixel(40) - utils.getActionBarSize() ;
+                    oY = (utils.getScreenHeight()) - (float) y - utils.dpTopixel(40) - utils.getActionBarSize();
                 }
             } else {
-                if ( ((sweepAngle/2)  + (sweepAngle * i)) > 90) {
+                if (((sweepAngle / 2) + (sweepAngle * i)) > 90) {
                     oX = (center + (float) x - utils.dpTopixel(40));
-                    oY = (utils.getCenterView().getY() + offset - (float) y - utils.dpTopixel(30)) ;
+                    oY = (utils.getCenterView().getY() + offset - (float) y - utils.dpTopixel(30));
                 } else {
                     oX = (center - (float) x - utils.dpTopixel(40));
-                    oY = (utils.getCenterView().getY() + offset - (float) y - utils.dpTopixel(30)) ;
+                    oY = (utils.getCenterView().getY() + offset - (float) y - utils.dpTopixel(30));
                 }
             }
 
@@ -273,7 +278,7 @@ public class RadialMenuView extends RevealFrameLayout {
             menuItemView.setY(oY);
 
             menuItemView.setClickable(false);
-            rootView.addView(menuItemView,0);
+            rootView.addView(menuItemView, 0);
             menuItemView.bringToFront();
             i++;
         }
