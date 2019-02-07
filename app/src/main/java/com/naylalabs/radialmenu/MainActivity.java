@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.naylalabs.semiradialmenu.MenuItemView;
 import com.naylalabs.semiradialmenu.RadialMenuView;
+import com.naylalabs.semiradialmenu.Utils;
 
 import java.util.ArrayList;
 
@@ -33,9 +34,9 @@ public class MainActivity extends AppCompatActivity implements RadialMenuView.Ra
         items.add(itemOne);
         items.add(itemTwo);
         items.add(itemThree);
-        //items.add(itemFour);
-        //items.add(itemFive);
-        radialMenuView.setListener(this).setMenuItems(items).setRotated(true).setCenterView(button).setInnerCircle(true, R.color.gray).build();
+        items.add(itemFour);
+        items.add(itemFive);
+        radialMenuView.setListener(this).setMenuItems(items).setCenterView(button).setInnerCircle(true, R.color.white).setOffset(10).build();
     }
 
     public void showClose(View view) {

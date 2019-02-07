@@ -13,6 +13,7 @@ public class Utils {
     public static Utils utils;
     private static Context mContext;
     private View view;
+    private int offset = 0;
 
     public Utils(Context context) {
         this.mContext = context;
@@ -25,7 +26,7 @@ public class Utils {
         return utils;
     }
 
-    public int dpTopixel(int dp) {
+    protected int dpTopixel(int dp) {
         float dip = (float) dp;
         Resources r = mContext.getResources();
         float px = TypedValue.applyDimension(
@@ -36,7 +37,7 @@ public class Utils {
         return (int) px;
     }
 
-    public int px2dp(int px) {
+    protected int px2dp(int px) {
         float pix = (float) px;
         Resources r = mContext.getResources();
         float pixel = TypedValue.applyDimension(
@@ -47,19 +48,19 @@ public class Utils {
         return (int) pixel;
     }
 
-    public int getScreenWidth() {
+    protected int getScreenWidth() {
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         return display.getWidth();
     }
 
-    public int getScreenHeight() {
+    protected int getScreenHeight() {
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         return display.getHeight();
     }
 
-    public int getActionBarSize() {
+    protected int getActionBarSize() {
         TypedValue typedValue = new TypedValue();
         mContext.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true);
         final DisplayMetrics metrics = new DisplayMetrics();
@@ -73,7 +74,15 @@ public class Utils {
         this.view = view;
     }
 
-    public View getCenterView () {
+    protected View getCenterView () {
         return view;
+    }
+
+    protected int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 }

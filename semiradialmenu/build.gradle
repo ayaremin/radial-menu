@@ -1,18 +1,30 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+
+    def groupProjectID = 'com.eminayar.radialmenu'
+    def artifactProjectID = 'radial-menu'
+    def publishVersionID = '0.0.1.1'
+
+    userOrg = 'kngfrhzs'
+    repoName = 'radial-menu'
+    groupId = groupProjectID
+    artifactId = artifactProjectID
+    publishVersion = publishVersionID
+    desc = 'Cool and stylish way to show radial menu on your android apps'
+    website = 'https://github.com/kngfrhzs/radial-menu'
+}
 
 android {
     compileSdkVersion 28
 
-
-
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-
+        versionCode 2
+        versionName "0.0.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -21,7 +33,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -31,7 +42,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
     implementation('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
         transitive = true;
     }

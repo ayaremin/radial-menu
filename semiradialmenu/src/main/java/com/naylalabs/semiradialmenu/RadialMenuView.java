@@ -26,13 +26,12 @@ public class RadialMenuView extends RevealFrameLayout {
     private ArrayList<MenuItemView> menuItemViews;
     //inner circle is true default
     private boolean innerCircle = true;
-    // This flag let user rotate views with correct angle
-    private boolean isRotated = false;
     private int innerCircleColor;
     private boolean allowTitle = true;
     private int minDistance;
     private SliceView v1;
     private FrameLayout rootView;
+    private int offset = 0;
 
     public RadialMenuView(Context context) {
         super(context);
@@ -55,28 +54,32 @@ public class RadialMenuView extends RevealFrameLayout {
 
     public RadialMenuView setMenuItems (ArrayList<MenuItemView> menuItemViews) {
         this.menuItemViews = menuItemViews;
+        return this;
+    }
+
+    public RadialMenuView setOffset (int offset) {
+        this.offset = Utils.getInstance(getContext()).dpTopixel(offset);
+        Utils.getInstance(getContext()).setOffset(this.offset);
+        return this;
+    }
+
+    public RadialMenuView setCenterView (View v) {
+        utils = Utils.getInstance(getContext());
+        Utils.getInstance(getContext()).setCenterView(v);
+        return this;
+    }
+
+    public void build() {
+        utils = Utils.getInstance(getContext());
         if (menuItemViews == null ) {
             throw new IllegalArgumentException("You should have at least 2 menu item");
         }
         if (menuItemViews.isEmpty() || menuItemViews.size() < 1 ) {
             throw new IllegalArgumentException("You should have at least 2 menu item");
         }
-        return this;
-    }
-
-    public RadialMenuView setRotated (boolean isRotated) {
-        this.isRotated = isRotated;
-        return this;
-    }
-
-    public RadialMenuView setCenterView (View v) {
-        utils = Utils.getInstance(getContext());
-        utils.setCenterView(v);
-        return this;
-    }
-
-    public void build() {
-        utils = Utils.getInstance(getContext());
+        if (menuItemViews.size() > 5) {
+            throw new IllegalArgumentException("You should have max 5 menu item");
+        }
         init();
     }
 
@@ -130,7 +133,9 @@ public class RadialMenuView extends RevealFrameLayout {
 
                     loop:for (int i = 0; i< menuItemViews.size(); i++) {
                         if (angle <= (sweepAngle * (i+1))) {
-                            listener.onItemClicked(i);
+                            if (listener != null) {
+                                listener.onItemClicked(i);
+                            }
                             break loop;
                         }
                     }
@@ -160,20 +165,19 @@ public class RadialMenuView extends RevealFrameLayout {
         }
     }
 
-    public void enterReveal() {
+    protected void enterReveal() {
         final View myView = this;
 
         int cWidth = utils.getScreenWidth() - utils.dpTopixel(50);
         int cHeight = cWidth / 2;
         int radius = cHeight;
 
-
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             Animator anim;
             if (utils.getCenterView() == null) {
                 anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, utils.getScreenHeight() - utils.getActionBarSize(), 0, radius);
             } else{
-                anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, (int)utils.getCenterView().getY(), 0, radius);
+                anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, (int)utils.getCenterView().getY() + offset , 0, radius);
             }
             anim.setDuration(300);
             myView.setVisibility(View.VISIBLE);
@@ -181,10 +185,9 @@ public class RadialMenuView extends RevealFrameLayout {
         } else {
             myView.setVisibility(View.VISIBLE);
         }
-
     }
 
-    public void exitReveal() {
+    protected void exitReveal() {
         try {
             isOpen = false;
             final View myView = this;
@@ -198,7 +201,7 @@ public class RadialMenuView extends RevealFrameLayout {
                 if (utils.getCenterView() == null) {
                     anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, utils.getScreenHeight() - utils.getActionBarSize(), radius, 0);
                 } else{
-                    anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, (int)utils.getCenterView().getY(), radius, 0);
+                    anim = ViewAnimationUtils.createCircularReveal(myView, utils.getScreenWidth() / 2, (int)utils.getCenterView().getY() + offset, radius, 0);
                 }
                 anim.setDuration(200);
 
@@ -238,12 +241,11 @@ public class RadialMenuView extends RevealFrameLayout {
             float oX, oY;
             double cos = Math.cos(Math.toRadians( angle ));
             double sin =  Math.sin(Math.toRadians( angle ));
-            double y = sin  * 4 * radius / 5;
-            double x = cos * 4 * radius / 5;
+            double y = sin  * 3 * radius / 4;
+            double x = cos * 3 * radius / 4;
 
             if (x<0)
                 x = x * -1;
-
             if (y < 0)
                 y = y * -1;
 
@@ -260,10 +262,10 @@ public class RadialMenuView extends RevealFrameLayout {
             } else {
                 if ( ((sweepAngle/2)  + (sweepAngle * i)) > 90) {
                     oX = (center + (float) x - utils.dpTopixel(40));
-                    oY = (utils.getCenterView().getY() - (float) y - utils.dpTopixel(20)) ;
+                    oY = (utils.getCenterView().getY() + offset - (float) y - utils.dpTopixel(30)) ;
                 } else {
                     oX = (center - (float) x - utils.dpTopixel(40));
-                    oY = (utils.getCenterView().getY() - (float) y - utils.dpTopixel(20)) ;
+                    oY = (utils.getCenterView().getY() + offset - (float) y - utils.dpTopixel(30)) ;
                 }
             }
 
@@ -273,15 +275,11 @@ public class RadialMenuView extends RevealFrameLayout {
             menuItemView.setClickable(false);
             rootView.addView(menuItemView,0);
             menuItemView.bringToFront();
-            if (isRotated) {
-                menuItemView.setAngleRotation(angle);
-                //menuItemView.setRotation(angle);
-            }
             i++;
         }
     }
 
-    public float getAngle(float x, float y, SliceView sliceView) {
+    private float getAngle(float x, float y, SliceView sliceView) {
         float angle = (float) Math.toDegrees(Math.atan2(sliceView.center_y - y, sliceView.center_x - x));
         if (angle < 0) {
             angle += 360;
@@ -289,7 +287,7 @@ public class RadialMenuView extends RevealFrameLayout {
         return angle;
     }
 
-    public double calculateDistanceBetweenCoordinates(
+    private double calculateDistanceBetweenCoordinates(
             double x1,
             double y1,
             double x2,

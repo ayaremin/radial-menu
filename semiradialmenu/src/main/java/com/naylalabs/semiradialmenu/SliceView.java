@@ -2,7 +2,6 @@ package com.naylalabs.semiradialmenu;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -75,7 +74,7 @@ public class SliceView extends View {
             if (utils.getCenterView() == null) {
                 center_y = utils.getScreenHeight() - utils.getActionBarSize();
             } else{
-                center_y = utils.getCenterView().getY();
+                center_y = utils.getCenterView().getY() + utils.getOffset();
             }
 
             oval.set(center_x - radius,
@@ -83,8 +82,6 @@ public class SliceView extends View {
                     center_x + radius,
                     center_y + radius);
             canvas.drawArc(oval, start, sweep, true, paint);
-
-
         } else {
             float width = (float) getWidth();
             float radius;
@@ -106,8 +103,8 @@ public class SliceView extends View {
             center_x = width / 2;
             if (utils.getCenterView() == null) {
                 center_y = utils.getScreenHeight() - utils.getActionBarSize();
-            } else{
-                center_y = utils.getCenterView().getY();
+            } else {
+                center_y = utils.getCenterView().getY() + utils.getOffset();
             }
 
             oval.set(center_x - radius,
