@@ -1,7 +1,5 @@
 package com.naylalabs.semiradialmenu;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Handler;
@@ -14,9 +12,10 @@ import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 
-import io.codetail.animation.SupportAnimator;
-import io.codetail.animation.ViewAnimationUtils;
-import io.codetail.widget.RevealFrameLayout;
+import circualreveal.animation.SupportAnimator;
+import circualreveal.animation.ViewAnimationUtils;
+import circualreveal.widget.RevealFrameLayout;
+
 
 public class RadialMenuView extends RevealFrameLayout {
     Utils utils;
@@ -190,8 +189,7 @@ public class RadialMenuView extends RevealFrameLayout {
             int cHeight = cWidth / 2;
             int radius = cHeight;
 
-            SupportAnimator anim =
-                    null;
+            SupportAnimator anim = null;
             if (utils.getCenterView() == null) {
                 anim = ViewAnimationUtils.createCircularReveal(rootView, utils.getScreenWidth() / 2, utils.getScreenHeight() - utils.getActionBarSize(), radius, 0);
             } else {

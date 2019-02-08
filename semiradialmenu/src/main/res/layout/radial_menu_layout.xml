@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.codetail.widget.RevealFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<circualreveal.widget.RevealFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:clipToPadding="false"
     android:clipChildren="false"
@@ -10,4 +10,4 @@
         android:layout_height="match_parent"
         android:id="@+id/root_view"/>
 
-</io.codetail.widget.RevealFrameLayout>
+</circualreveal.widget.RevealFrameLayout>
