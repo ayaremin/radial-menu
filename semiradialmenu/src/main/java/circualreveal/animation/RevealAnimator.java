@@ -10,66 +10,22 @@ import com.nineoldandroids.util.FloatProperty;
 
 import java.lang.ref.WeakReference;
 
-/**
- * @hide
- */
 public interface RevealAnimator{
 
     RevealRadius CLIP_RADIUS = new RevealRadius();
 
-    /**
-     * Listen when animation start/end/cancel
-     * and setup view for it
-     */
     void onRevealAnimationStart();
     void onRevealAnimationEnd();
     void onRevealAnimationCancel();
 
-    /**
-     * Used with animator to animate view clipping
-     *
-     * @param value clip radius
-     */
     void setRevealRadius(float value);
 
-    /**
-     * Used with animator to animate view clipping
-     *
-     * @return current radius
-     */
     float getRevealRadius();
 
-    /**
-     * Invalidate certain rectangle
-     *
-     * @param bounds bounds to redraw
-     * @see View#invalidate(Rect)
-     */
     void invalidate(Rect bounds);
 
-    /**
-     * {@link ViewAnimationUtils#createCircularReveal(View, int, int, float, float)} is
-     * called it creates new {@link io.codetail.animation.RevealAnimator.RevealInfo}
-     * and attaches to parent, here is necessary data about animation
-     *
-     * @param info reveal information
-     *
-     * @see RevealInfo
-     */
     void attachRevealInfo(RevealInfo info);
 
-    /**
-     * Returns new {@link SupportAnimator} that plays
-     * reversed animation of current one
-     *
-     * This method might be temporary, you should call
-     * {@link SupportAnimator#reverse()} instead
-     *
-     * @hide
-     * @return reverse {@link SupportAnimator}
-     *
-     * @see SupportAnimator#reverse()
-     */
     SupportAnimator startReverseAnimation();
 
     class RevealInfo{

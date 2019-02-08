@@ -40,7 +40,6 @@ public class ViewRevealManager {
       final RevealValues values = getValues(animation);
       values.clip(false);
 
-      // Clean up after animation is done
       targets.remove(values.target);
       animators.remove(animation);
     }
@@ -63,13 +62,6 @@ public class ViewRevealManager {
     return animator;
   }
 
-  /**
-   * Create custom animator of circular reveal
-   *
-   * @param data RevealValues contains information of starting & ending points, animation target and
-   * current animation values
-   * @return Animator to manage reveal animation
-   */
   protected Animator createAnimator(RevealValues data) {
     final ObjectAnimator animator =
         ObjectAnimator.ofFloat(data, REVEAL, data.startRadius, data.endRadius);
@@ -82,58 +74,32 @@ public class ViewRevealManager {
     return animatorCallback;
   }
 
-  /**
-   * @return Retruns Animator
-   */
   protected final RevealValues getValues(Animator animator) {
     return animators.get(animator);
   }
 
-  /**
-   * @return Map of started animators
-   */
   protected final RevealValues getValues(View view) {
     return targets.get(view);
   }
 
-  /**
-   * @return True if you don't want use Android native reveal animator in order to use your own
-   * custom one
-   */
   protected boolean overrideNativeAnimator() {
     return false;
   }
 
-  /**
-   * @return True if animation was started and it is still running, otherwise returns False
-   */
   public boolean isClipped(View child) {
     final RevealValues data = getValues(child);
     return data != null && data.isClipping();
   }
 
-  /**
-   * Applies path clipping on a canvas before drawing child,
-   * you should save canvas state before viewTransformation and
-   * restore it afterwards
-   *
-   * @param canvas Canvas to apply clipping before drawing
-   * @param child Reveal animation target
-   * @return True if viewTransformation was successfully applied on referenced child, otherwise
-   * child be not the target and therefore animation was skipped
-   */
   public final boolean transform(Canvas canvas, View child) {
     final RevealValues revealData = targets.get(child);
 
-    // Target doesn't has animation values
     if (revealData == null) {
       return false;
     }
-    // Check whether target consistency
     else if (revealData.target != child) {
       throw new IllegalStateException("Inconsistency detected, contains incorrect target view");
     }
-    // View doesn't wants to be clipped therefore transformation is useless
     else if (!revealData.clipping) {
       return false;
     }
@@ -156,13 +122,10 @@ public class ViewRevealManager {
     final float startRadius;
     final float endRadius;
 
-    // Flag that indicates whether view is clipping now, mutable
     boolean clipping;
 
-    // Revealed radius
     float radius;
 
-    // Animation target
     View target;
 
     public RevealValues(View target, int centerX, int centerY, float startRadius, float endRadius) {
@@ -177,12 +140,10 @@ public class ViewRevealManager {
       this.radius = radius;
     }
 
-    /** @return current clipping radius */
     public float radius() {
       return radius;
     }
 
-    /** @return Animating view */
     public View target() {
       return target;
     }
@@ -191,49 +152,32 @@ public class ViewRevealManager {
       this.clipping = clipping;
     }
 
-    /** @return View clip status */
     public boolean isClipping() {
       return clipping;
     }
   }
 
-  /**
-   * Custom View viewTransformation extension used for applying different reveal
-   * techniques
-   */
   interface ViewTransformation {
 
-    /**
-     * Apply view viewTransformation
-     *
-     * @param canvas Main canvas
-     * @param child Target to be clipped & revealed
-     * @return True if viewTransformation is applied, otherwise return fAlse
-     */
     boolean transform(Canvas canvas, View child, RevealValues values);
   }
 
   public static class PathTransformation implements ViewTransformation {
 
-    // Android Canvas is tricky, we cannot clip circles directly with Canvas API
-    // but it is allowed using Path, therefore we use it :|
     private final Path path = new Path();
 
     private Region.Op op = Region.Op.REPLACE;
 
-    /** @see Canvas#clipPath(Path, Region.Op) */
     public Region.Op op() {
       return op;
     }
 
-    /** @see Canvas#clipPath(Path, Region.Op) */
     public void op(Region.Op op) {
       this.op = op;
     }
 
     @Override public boolean transform(Canvas canvas, View child, RevealValues values) {
       path.reset();
-      // trick to applyTransformation animation, when even x & y translations are running
       path.addCircle(child.getX() + values.centerX, child.getY() + values.centerY, values.radius,
           Path.Direction.CW);
 
@@ -246,11 +190,6 @@ public class ViewRevealManager {
     }
   }
 
-  /**
-   * Property animator. For performance improvements better to use
-   * directly variable member (but it's little enhancement that always
-   * caught as dangerous, let's see)
-   */
   private static final class ClipRadiusProperty extends Property<RevealValues, Float> {
 
     ClipRadiusProperty() {
@@ -267,11 +206,6 @@ public class ViewRevealManager {
     }
   }
 
-  /**
-   * As class name cue's it changes layer type of {@link View} on animation createAnimator
-   * in order to improve animation smooth & performance and returns original value
-   * on animation end
-   */
   static class ChangeViewLayerTypeAdapter extends AnimatorListenerAdapter {
     private RevealValues viewData;
     private int featuredLayerType;

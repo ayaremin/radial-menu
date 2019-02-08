@@ -49,39 +49,23 @@ public class RevealLinearLayout extends LinearLayout implements RevealAnimator {
         onRevealAnimationEnd();
     }
 
-    /**
-     * Circle radius size
-     *
-     * @hide
-     */
     @Override
     public void setRevealRadius(float radius){
         mRadius = radius;
         invalidate(mTargetBounds);
     }
 
-    /**
-     * Circle radius size
-     *
-     * @hide
-     */
     @Override
     public float getRevealRadius(){
         return mRadius;
     }
 
-    /**
-     * @hide
-     */
     @Override
     public void attachRevealInfo(RevealInfo info) {
         info.getTarget().getHitRect(mTargetBounds);
         mRevealInfo = info;
     }
 
-    /**
-     * @hide
-     */
     @Override
     public SupportAnimator startReverseAnimation() {
         if(mRevealInfo != null && mRevealInfo.hasTarget() && !mRunning) {
