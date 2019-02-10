@@ -95,11 +95,11 @@ Muhammed Emin Ayar - emin@naylalabs.com
 
 ### Hire Us for your projects
 
-As [`NaylaLabs`] (https://www.naylalabs.com) We are a team of young and dynamic developers that have extensive experience in the digital world. Your needs are handled with our creative engineering approach to find the best solution.
+As `NaylaLabs` (https://www.naylalabs.com) We are a team of young and dynamic developers that have extensive experience in the digital world. Your needs are handled with our creative engineering approach to find the best solution.
 
 ### Thanks
 
-Special thanks to developers of [CircularReveal] (https://github.com/ozodrukh/CircularReveal) library to let reveal animation possible for API 14+.
+Special thanks to developers of `CircularReveal` (https://github.com/ozodrukh/CircularReveal) library to let reveal animation possible for API 14+.
 
 ### License
 
