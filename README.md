@@ -17,7 +17,7 @@ quite simple to use radial menu in your any kind of layout. Place it in your xml
 
 ## Restrictions
 
-For now it is only supporting to open above a view. There is no way for showing it from sides of screen. Any PRs are welcomed for this feature.
+For now it is only supporting to open above a view. There is no way for showing it from sides of screen. Any PRs are welcomed for this feature. And you can have min 2 item and max 5 item. Also another restriction is after 3 element it hides `titles` automatically and only shows icons
 
 ### XML Part of Usage
  
