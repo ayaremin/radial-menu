@@ -2,7 +2,7 @@
 
 ### Cool and stylish way to create semi-circle radial menus for your android apps
 
-![Imgur](https://i.imgur.com/u8xHi7q.gifv)
+![](https://i.imgur.com/u8xHi7q.gif)
 
 ## Installation
 Add this into your build.gradle dependencies section.
